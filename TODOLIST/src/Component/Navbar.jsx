@@ -5,23 +5,25 @@ import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 
 function NavBar() {
-    const [userLogged, setUserLogged] = useState(null);
+    const [userLogged, setUserLogged] = useState();
 
   return (
     <Navbar expand="lg" className="bg-body-tertiary">
       <Container>
-        <Navbar.Brand href="#home">TO DO LIST </Navbar.Brand>
+        <Navbar.Brand >Ask-a-Task </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav " />
         <Navbar.Collapse id="basic-navbar-nav ">
           <Nav className="ms-auto ">
 
-            {userLogged !== null && (
-                <NavDropdown title="Mon Compte" id="basic-nav-dropdown">
+            {userLogged !== false && (
+              <NavDropdown title="Mon Compte" id="basic-nav-dropdown">
                 <NavDropdown.Item >Mes informations</NavDropdown.Item>
-                <NavDropdown.Item >Mes tâches</NavDropdown.Item>
+                <NavDropdown.Item href='/tasks'>Mes tâches</NavDropdown.Item>
+                <NavDropdown.Item >Déconnexion</NavDropdown.Item>
               </NavDropdown>
-)} 
-{userLogged == null && (
+            )} 
+
+{userLogged == false && (
     <>
 <Nav.Link href="/inscription">Inscription</Nav.Link>
 <Nav.Link href="/connexion">Connexion</Nav.Link>

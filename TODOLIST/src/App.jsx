@@ -3,6 +3,8 @@ import NavBar from "./Component/Navbar";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import ModuleInscription from "./Component/moduleInscription";
 import ModuleConnexion from "./Component/moduleConnexion";
+import TaskPage from "./Pages/todolist";
+
 
 function App() {
   return (
@@ -12,10 +14,11 @@ function App() {
 <Routes>
   <Route path="/inscription" element={<ModuleInscription></ModuleInscription>}></Route>
   <Route path="/connexion" element={<ModuleConnexion></ModuleConnexion>}></Route>
+  <Route path="/tasks" element={<TaskPage></TaskPage>}></Route>
 </Routes>
     </BrowserRouter>
     </>
-  )
+  ) 
 }
 
 export default App;

@@ -8,7 +8,6 @@ function ModuleInscription() {
   const [nameUser, setNameUser] = useState('');
   const [passwordUser, setPasswordUser] = useState('');
 
-
   const clickSubmit = async (e) => {
     e.preventDefault(); // Empêche le rechargement de la page par défaut
     try {
