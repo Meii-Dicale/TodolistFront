@@ -3,18 +3,34 @@ import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/esm/Container';
 import Form from 'react-bootstrap/Form';
 import Subscription from '../Services/userServices';
+import { useNavigate } from 'react-router-dom';
 
 function ModuleInscription() {
   const [nameUser, setNameUser] = useState('');
   const [passwordUser, setPasswordUser] = useState('');
+  const navigate = useNavigate();
 
   const clickSubmit = async (e) => {
     e.preventDefault(); // Empêche le rechargement de la page par défaut
     try {
-      await Subscription(nameUser, passwordUser);
-      alert('Inscription réussie !');
+      const response = await Subscription(nameUser, passwordUser);
+      if (response.data === "Nom déjà utilisé"
+      ){
+      alert('Nom déjà utilisé');
+      console.log(response);
+
       setNameUser('');
       setPasswordUser('');
+      }if (response.data != "Nom déjà utilisé"
+      ) {
+        console.log(response);
+        setNameUser('');
+        setPasswordUser('');
+        
+        navigate('/connexion')
+        alert('Inscription réussie !');
+
+      }
     } catch (error) {
       console.error(error);
     }
@@ -22,7 +38,7 @@ function ModuleInscription() {
 
   return (
     <>
-      <Container className="mt-5 col-3 text-center">
+      <Container className="mt-5 col-3 text-center module">
         <Form onSubmit={clickSubmit}>
           <h1>Inscription</h1>
 

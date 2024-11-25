@@ -1,19 +1,37 @@
 import axios from "axios";
 
-function createTask ( libelleTask) {
+function createTask (idUser, libelleTask) {
     const data = {
-        libelleTask: libelleTask
+        libelleTask: libelleTask,
+        idUser: idUser,
+    
     };
     return axios.post ('http://localhost:3007/task/createTask' , data)
 }
 
-function getTasks () {
-    return axios.get ('http://localhost:3007/task/tasksToDo')
+function getTasks (idUser) {
+    const data = {
+        idUser: idUser,
+    };
+    return axios.post ('http://localhost:3007/task/tasksToDo' , data)
+}
+
+function getTaskDone (idUser) {
+    const data = {
+        idUser: idUser,
+    };
+    return axios.post ('http://localhost:3007/task/tasksFinished' , data)
+}
+
+function getTaskDoing (idUser) {
+    const data = {
+        idUser: idUser,
+    };
+    return axios.post ('http://localhost:3007/task/tasksInProgress' , data)
 }
 
 
 
 
 export default  createTask; 
-export { getTasks };
-
+export { getTasks, getTaskDone, getTaskDoing};

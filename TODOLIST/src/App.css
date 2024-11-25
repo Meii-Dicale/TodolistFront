@@ -1,3 +1,12 @@
+.imgac{
+    width: 200px;
+
+}
+
+.module{
+    background-image: url(../img/bloc.jpg);
+    background-size: contain;
+}   
 .taskzone{
     background-color: rgb(220, 166, 28);
     border-radius: 30px;
@@ -26,11 +35,29 @@
     display: flex;
     width: 100%;
     justify-content: space-between;
+    padding: 2%;    
+    color: black;
+    
+}
+.libelletaskDoing{
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
     padding: 2%;
+    color: darkred;
     
 }
 
-.rightButtons{
-
+.libelletaskDone{
+    text-decoration: line-through;
     display: flex;
+    width: 100%;
+    justify-content: space-between;
+    padding: 2%;
+    color: grey;
+}
+
+.selected{
+    background-color: rgb(204, 167, 134);
+    color: white;
 }

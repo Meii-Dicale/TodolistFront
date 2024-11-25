@@ -6,4 +6,6 @@ function Connexion ( nameUser, passwordUser ) {
     };
     return axios.post ('http://localhost:3007/user/loginUser' , data)
 }
+
+
 export default Connexion;

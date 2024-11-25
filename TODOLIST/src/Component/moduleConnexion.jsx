@@ -3,29 +3,55 @@ import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/esm/Container';
 import Form from 'react-bootstrap/Form';
 import Connexion from '../Services/ConnexionService';
+import { useNavigate } from 'react-router-dom';
+import { isExpired, decodeToken } from "react-jwt";
+
 
 function ModuleConnexion() {
   const [nameUser, setNameUser] = useState('');
   const [passwordUser, setPasswordUser] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const navigate = useNavigate();
+  const token = ""
 
-  const clickSubmit = (event) => {
+
+
+
+  const clickSubmit = async (event) => {
     event.preventDefault(); // Empêche le rechargement de la page
     setErrorMessage(''); // Réinitialise les erreurs
-    Connexion(nameUser, passwordUser)
-      .then((response) => {
-      
-        setNameUser('');
-        setPasswordUser('');
-      })
-      .catch((error) => {
-        console.error(error);
+
+    try {
+        // Appel à la fonction Connexion pour authentifier l'utilisateur
+        const response = await Connexion(nameUser, passwordUser);
+        
+        // Vérifie si la réponse contient un token
+        if (response && response.data && response.data.token) {
+
+            // Stocke le token dans localStorage
+            localStorage.setItem('token', response.data.token);
+
+            console.log("Token stocké en localStorage:", localStorage.getItem('token'));
+            //rediriger vers la page task
+
+            navigate('/tasks');
+
+            
+        } else {
+            // Si le token n'est pas présent dans la réponse
+            throw new Error("Token manquant");
+        }
+    } catch (error) {
+        console.error("Erreur de connexion:", error);
         setErrorMessage("Échec de la connexion. Vérifiez vos identifiants.");
-      });
-  };
+    }
+};
+
+
+
 
   return (
-    <Container className="mt-5 col-3 text-center">
+    <Container className="mt-5 col-3 text-center module">
       <Form onSubmit={clickSubmit}>
         <h1>Connexion</h1>
         {errorMessage && <p className="text-danger">{errorMessage}</p>}
