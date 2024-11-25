@@ -30,8 +30,16 @@ function getTaskDoing (idUser) {
     return axios.post ('http://localhost:3007/task/tasksInProgress' , data)
 }
 
+function getAllTasks(idUser) {
+    const data = {
+        idUser: idUser,
+    };
+    return axios.post ('http://localhost:3007/task/allTasks' , data)
+}
+
 
 
 
 export default  createTask; 
 export { getTasks, getTaskDone, getTaskDoing};
+export { getAllTasks };

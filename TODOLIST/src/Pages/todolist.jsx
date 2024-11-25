@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Container from "react-bootstrap/esm/Container";
 import "../App.css";
-import createTask from "../Services/taskServices";
+import createTask, { getAllTasks } from "../Services/taskServices";
 import { getTasks, getTaskDone, getTaskDoing } from "../Services/taskServices";
 import deleteTasks from "../Services/deleteTask";
 import updateTasks from "../Services/Updatetask"
@@ -15,9 +15,6 @@ import { useJwt } from "react-jwt";
 
 
 const TaskPage = () => {
-    const [tasksToDo, setTasksToDo] = useState([]);
-    const [tasksDone, setTasksDone] = useState([]);
-    const [tasksDoing, setTasksDoing] = useState([]);
     const [newTask, setNewTask] = useState("");
     const [idTask, setIdTask] = useState("");
     const [upTask, setUpTask] = useState("");
@@ -28,7 +25,7 @@ const TaskPage = () => {
     const [idUser, setIdUser] = useState("");
     const token = localStorage.getItem("token");
     const { decodedToken, isExpired } = useJwt(token);
-    
+    const [allTasks, setAllTasks] = useState();    
 
 
 ////////////////////////////////////////////////////////////////
@@ -42,41 +39,26 @@ const TaskPage = () => {
         if (decodedToken && !isExpired) {
             setIdUser(decodedToken.id); // Enregistre l'ID de l'utilisateur
             console.log("ID Utilisateur :", decodedToken);
+            
         }
+        
     }, [decodedToken, isExpired]); 
 
-
-
-    // Fonctions pour récupérer les différentes tâches
-    const getTaskToDo = async ()  => {
+    const ALLTASKS = async () => {
         try {
-            const response = await getTasks(idUser);
-            setTasksToDo(response.data);
-        
+            const response = await getAllTasks(idUser);
+            setAllTasks(response.data);
+            console.log("Toutes les tâches : ", response.data);
             
+ 
         } catch (error) {
             console.error(error);
         }
-    };
+     };
+     useEffect(()=> {
+        ALLTASKS()
+     }, [idUser])
 
-    const getTaskFinishes = async () => {
-        try {
-            const response = await getTaskDone(idUser);
-            setTasksDone(response.data);
-            
-        } catch (error) {
-            console.error( error);
-        }
-    };
-
-    const getTaskIncourse = async () => {
-        try {
-            const response = await getTaskDoing(idUser  );
-            setTasksDoing(response.data);        
-        } catch (error) {
-            console.error(error);
-        }
-    };
 ////////////////////////////////////////////////////////////////
     // Fonction pour mettre à jour une tâche
     const update =  () => {
@@ -85,7 +67,8 @@ const TaskPage = () => {
             console.log(idTask)
             setUpTask("");
             setIdTask("");
-             getTaskToDo();
+            ALLTASKS();
+
            
             
         } catch (error) {
@@ -99,7 +82,8 @@ const TaskPage = () => {
         if (!newTask.trim()) return; // Éviter les requêtes vides
         try {
              createTask(idUser, newTask);
-             getTaskToDo(); // Recharger les tâches
+             
+             ALLTASKS();
              setNewTask("");
           
         } catch (error) {
@@ -110,7 +94,7 @@ const TaskPage = () => {
     const removeTask =  (idTask) => {
         try {
          deleteTasks(idTask);
-             getTaskToDo();
+         ALLTASKS();
         } catch (error) {
             console.error("Erreur lors de la suppression de la tâche :", error);
         }
@@ -119,9 +103,7 @@ const TaskPage = () => {
     const getDone =  (idTask) => {
         try {
              updateStateTask(idTask, 3);
-             getTaskToDo();
-             getTaskFinishes();
-          
+             ALLTASKS();
         } catch (error) {
             console.error("Erreur lors de la mise à jour de la tâche :", error);
         }
@@ -130,9 +112,7 @@ const TaskPage = () => {
     const getDoing =  (idTask) => {
         try {
              updateStateTask(idTask, 2);
-             getTaskToDo();
-             getTaskFinishes();
-             getTaskIncourse();
+             ALLTASKS();
         } catch (error) {
             console.error("Erreur lors de la mise à jour de la tâche :", error);
         }
@@ -141,35 +121,11 @@ const TaskPage = () => {
     const getTodo =  (idTask) => {
         try {
              updateStateTask(idTask, 1);
-             getTaskToDo();
-             getTaskFinishes();
-             getTaskIncourse();
+             ALLTASKS();
         } catch (error) {
             console.error("Erreur lors de la mise à jour de la tâche :", error);
         }
     };
-
-    // Fonction pour chercher une tâche
-
-    useEffect(() => {
-        getTaskToDo();
-    
-     
-
-    }, [tasksToDo]);
-
-    useEffect(() => {
-
-
-        getTaskIncourse();
-    }, [ tasksDoing]);
-
-    useEffect(() => {
-
-        getTaskFinishes();
-
-    }, [tasksDone]);
-
     return (
         <>
             <Container>
@@ -207,7 +163,16 @@ const TaskPage = () => {
                         </div>
 
                         <div className="tasks">
-                            {!isCheckedTodo && tasksToDo.map((task) => (
+
+                        {allTasks &&
+  allTasks
+    .filter((task) => task.idState === 1) 
+    .map((task) => (
+
+
+
+
+                            
                                 <div className="libelletask" key={task.idTask}>
                                     {/*id task est vide par défaut, si idtask = id de la task, alors j'affiche un champ de modification, je transforme le bouton modifier en confirmer */}
                                     {idTask === task.idTask ? (
@@ -244,7 +209,11 @@ const TaskPage = () => {
                                     </div>
                                 </div>
                             ))}
-                           {!isCheckedDoing &&tasksDoing.map((task) => (
+                          
+                        {allTasks &&
+  allTasks
+    .filter((task) => task.idState === 2) 
+    .map((task) => (
                                 <div className="libelletaskDoing" key={task.idTask}>
                                     {/*id task est vide par défaut, si idtask = id de la task, alors j'affiche un champ de modification, je transforme le bouton modifier en confirmer */}
                                     {idTask === task.idTask ? (
@@ -280,7 +249,11 @@ const TaskPage = () => {
                                     </div>
                                 </div>
                             ))} 
-                             {!isCheckedDone && tasksDone.map((task) => (
+                          
+                        {allTasks &&
+  allTasks
+    .filter((task) => task.idState === 3) 
+    .map((task) => (
                                 <div className="libelletaskDone" key={task.idTask}>
                                     {/*id task est vide par défaut, si idtask = id de la task, alors j'affiche un champ de modification, je transforme le bouton modifier en confirmer */}
                                     {idTask === task.idTask ? (
