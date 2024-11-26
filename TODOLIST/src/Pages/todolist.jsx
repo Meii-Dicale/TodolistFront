@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import Container from "react-bootstrap/esm/Container";
 import "../App.css";
 import createTask, { getAllTasks } from "../Services/taskServices";
-import { getTasks, getTaskDone, getTaskDoing } from "../Services/taskServices";
 import deleteTasks from "../Services/deleteTask";
 import updateTasks from "../Services/Updatetask"
 import updateStateTask from "../Services/doneTask";
@@ -18,18 +17,18 @@ const TaskPage = () => {
     const [newTask, setNewTask] = useState("");
     const [idTask, setIdTask] = useState("");
     const [upTask, setUpTask] = useState("");
-    const [isCheckedDoing , setIsCheckedDoing] = useState(false);
+    const [isCheckedDoing, setIsCheckedDoing] = useState(false);
     const [isCheckedDone, setIsCheckedDone] = useState(false);
     const [isCheckedTodo, setIsCheckedTodo] = useState(false);
     const [searchTask, setSearchTask] = useState("");
     const [idUser, setIdUser] = useState("");
     const token = localStorage.getItem("token");
     const { decodedToken, isExpired } = useJwt(token);
-    const [allTasks, setAllTasks] = useState();    
+    const [allTasks, setAllTasks] = useState();
 
 
-////////////////////////////////////////////////////////////////
-// récupérer le token et récupérer l'id en traduisant le token avec jwt
+    ////////////////////////////////////////////////////////////////
+    // récupérer le token et récupérer l'id en traduisant le token avec jwt
 
 
     // Fonction pour récupérer l'ID de l'utilisateur à partir du token
@@ -39,89 +38,89 @@ const TaskPage = () => {
         if (decodedToken && !isExpired) {
             setIdUser(decodedToken.id); // Enregistre l'ID de l'utilisateur
             console.log("ID Utilisateur :", decodedToken);
-            
+
         }
-        
-    }, [decodedToken, isExpired]); 
+
+    }, [decodedToken, isExpired]);
 
     const ALLTASKS = async () => {
         try {
             const response = await getAllTasks(idUser);
             setAllTasks(response.data);
             console.log("Toutes les tâches : ", response.data);
-            
- 
+
+
         } catch (error) {
             console.error(error);
         }
-     };
-     useEffect(()=> {
+    };
+    useEffect(() => {
         ALLTASKS()
-     }, [idUser])
+    }, [idUser])
 
-////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////
     // Fonction pour mettre à jour une tâche
-    const update =  () => {
+    const update = () => {
         try {
-             updateTasks(idTask, upTask);
+            updateTasks(idTask, upTask);
             console.log(idTask)
             setUpTask("");
             setIdTask("");
             ALLTASKS();
 
-           
-            
+
+
         } catch (error) {
             console.error("Erreur lors de la mise à jour de la tâche :", error);
         }
     };
 
     // Fonction pour ajouter une tâche
-    const addTask =  (e) => {
+    const addTask = (e) => {
         e.preventDefault();
         if (!newTask.trim()) return; // Éviter les requêtes vides
         try {
-             createTask(idUser, newTask);
-             
-             ALLTASKS();
-             setNewTask("");
-          
+            createTask(idUser, newTask);
+
+            ALLTASKS();
+            setNewTask("");
+
         } catch (error) {
             console.error("Erreur lors de l'ajout de la tâche :", error);
         }
     };
     // Fonction pour supprimer une tâche
-    const removeTask =  (idTask) => {
+    const removeTask = (idTask) => {
         try {
-         deleteTasks(idTask);
-         ALLTASKS();
+            deleteTasks(idTask);
+            ALLTASKS();
         } catch (error) {
             console.error("Erreur lors de la suppression de la tâche :", error);
         }
     };
     // Fonction passer une tâche "terminée"
-    const getDone =  (idTask) => {
+    const getDone = async (idTask) => {
         try {
-             updateStateTask(idTask, 3);
-             ALLTASKS();
+            await updateStateTask(idTask, 3);
+            ALLTASKS();
         } catch (error) {
             console.error("Erreur lors de la mise à jour de la tâche :", error);
         }
     };
     //Fonction pour passer une tâche "en cours"
-    const getDoing =  (idTask) => {
+    const getDoing = async (idTask) => {
         try {
-             updateStateTask(idTask, 2);
-             ALLTASKS();
+            await updateStateTask(idTask, 2);
+            ALLTASKS();
         } catch (error) {
             console.error("Erreur lors de la mise à jour de la tâche :", error);
         }
     };
     //Fonction pour passer une tâche "à faire"
-    const getTodo =  (idTask) => {
+    const getTodo = async (idTask) => {
         try {
-             updateStateTask(idTask, 1);
-             ALLTASKS();
+            await updateStateTask(idTask, 1);
+            ALLTASKS();
         } catch (error) {
             console.error("Erreur lors de la mise à jour de la tâche :", error);
         }
@@ -131,17 +130,17 @@ const TaskPage = () => {
             <Container>
                 <div className="d-flex flex-row gap-5 mt-5">
                     <div className="selectors d-flex w-25 flex-column">
-                        <div onClick={() => setIsCheckedDoing(!isCheckedDoing)}> 
-                            <input type="checkbox" checked={isCheckedDoing} onChange={() => setIsCheckedDoing(!isCheckedDoing)}/>
+                        <div onClick={() => setIsCheckedDoing(!isCheckedDoing)}>
+                            <input type="checkbox" checked={isCheckedDoing} onChange={() => setIsCheckedDoing(!isCheckedDoing)} />
                             Masquer tâches en cours
                         </div>
                         <div onClick={() => setIsCheckedTodo(!isCheckedTodo)}>
-                           <input  type="checkbox"  checked={isCheckedTodo} onChange={() => setIsCheckedTodo(!isCheckedTodo)} /> 
+                            <input type="checkbox" checked={isCheckedTodo} onChange={() => setIsCheckedTodo(!isCheckedTodo)} />
                             Masquer tâches à faire
                         </div>
 
                         <div onClick={() => setIsCheckedDone(!isCheckedDone)}>
-                            <input type="checkbox" checked={isCheckedDone} onChange={() => setIsCheckedDone(!isCheckedDone)}/>
+                            <input type="checkbox" checked={isCheckedDone} onChange={() => setIsCheckedDone(!isCheckedDone)} />
                             Masquer tâches terminées
                         </div>
                         <div>
@@ -164,133 +163,128 @@ const TaskPage = () => {
 
                         <div className="tasks">
 
-                        {allTasks &&
-  allTasks
-    .filter((task) => task.idState === 1) 
-    .map((task) => (
+                            {allTasks && isCheckedTodo == false &&
+                                allTasks
+                                    .filter((task) => task.idState === 1)
+                                    .map((task) => (
+                                        <div className="libelletask" key={task.idTask}>
+                                            {/*id task est vide par défaut, si idtask = id de la task, alors j'affiche un champ de modification, je transforme le bouton modifier en confirmer */}
+                                            {idTask === task.idTask ? (
+                                                <input
+                                                    type="text"
+                                                    value={upTask}
+                                                    onChange={(e) => setUpTask(e.target.value)}
+                                                    placeholder="Modifier la tâche..."
+                                                />
+                                            ) : (
+                                                <span>{task.libelleTask}</span>
+                                            )}
 
+                                            <div className="rightButtons">
 
+                                                {idTask === task.idTask ? (
+                                                    <button onClick={update}>Confirmer</button>
+                                                ) : (
+                                                    <button
+                                                        onClick={() => {
+                                                            setIdTask(task.idTask);
+                                                            setUpTask(task.libelleTask);
+                                                        }}
+                                                    >
+                                                        Modifier
+                                                    </button>
+                                                )}
+                                                <button onClick={() => removeTask(task.idTask)}>
+                                                    Supprimer
+                                                </button>
+                                                <button className="selected" onClick={() => getTodo(task.idTask)}>A faire</button>
+                                                <button onClick={() => getDoing(task.idTask)}>En cours</button>
+                                                <button onClick={() => getDone(task.idTask)}>Terminé</button>
+                                            </div>
+                                        </div>
+                                    ))}
 
+                            {allTasks && isCheckedDoing == false &&
+                                allTasks
+                                    .filter((task) => task.idState === 2)
+                                    .map((task) => (
+                                        <div className="libelletaskDoing" key={task.idTask}>
+                                            {/*id task est vide par défaut, si idtask = id de la task, alors j'affiche un champ de modification, je transforme le bouton modifier en confirmer */}
+                                            {idTask === task.idTask ? (
+                                                <input
+                                                    type="text"
+                                                    value={upTask}
+                                                    onChange={(e) => setUpTask(e.target.value)}
+                                                    placeholder="Modifier la tâche..."
+                                                />
+                                            ) : (
+                                                <span>{task.libelleTask}</span>
+                                            )}
 
-                            
-                                <div className="libelletask" key={task.idTask}>
-                                    {/*id task est vide par défaut, si idtask = id de la task, alors j'affiche un champ de modification, je transforme le bouton modifier en confirmer */}
-                                    {idTask === task.idTask ? (
-                                        <input
-                                            type="text"
-                                            value={upTask}
-                                            onChange={(e) => setUpTask(e.target.value)}
-                                            placeholder="Modifier la tâche..."
-                                        />
-                                    ) : (
-                                        <span>{task.libelleTask}</span>
-                                    )}
+                                            <div className="rightButtons">
 
-                                    <div className="rightButtons">
-                         
-                                        {idTask === task.idTask ? (
-                                            <button onClick={update}>Confirmer</button>
-                                        ) : (
-                                            <button
-                                                onClick={() => {
-                                                    setIdTask(task.idTask);
-                                                    setUpTask(task.libelleTask);
-                                                }}
-                                            >
-                                                Modifier
-                                            </button>
-                                        )}
-                                                       <button onClick={() => removeTask(task.idTask)}>
-                                            Supprimer
-                                        </button>
-                                        <button className="selected" onClick={()=> getTodo(task.idTask)}>A faire</button>
-                                        <button onClick={()=> getDoing(task.idTask)}>En cours</button>
-                                        <button onClick={()=> getDone(task.idTask)}>Terminé</button>
-                                    </div>
-                                </div>
-                            ))}
-                          
-                        {allTasks &&
-  allTasks
-    .filter((task) => task.idState === 2) 
-    .map((task) => (
-                                <div className="libelletaskDoing" key={task.idTask}>
-                                    {/*id task est vide par défaut, si idtask = id de la task, alors j'affiche un champ de modification, je transforme le bouton modifier en confirmer */}
-                                    {idTask === task.idTask ? (
-                                        <input
-                                            type="text"
-                                            value={upTask}
-                                            onChange={(e) => setUpTask(e.target.value)}
-                                            placeholder="Modifier la tâche..."
-                                        />
-                                    ) : (
-                                        <span>{task.libelleTask}</span>
-                                    )}
+                                                {idTask === task.idTask ? (
+                                                    <button onClick={update}>Confirmer</button>
+                                                ) : (
+                                                    <button
+                                                        onClick={() => {
+                                                            setIdTask(task.idTask);
+                                                            setUpTask(task.libelleTask);
+                                                        }}
+                                                    >
+                                                        Modifier
+                                                    </button>
+                                                )}
+                                                <button onClick={() => removeTask(task.idTask)}> Supprimer</button>
+                                                <button onClick={() => getTodo(task.idTask)}>A faire</button>
+                                                <button className="selected" onClick={() => getDoing(task.idTask)}>En cours</button>
+                                                <button onClick={() => getDone(task.idTask)}>Terminé</button>
 
-                                    <div className="rightButtons">
-                         
-                                        {idTask === task.idTask ? (
-                                            <button onClick={update}>Confirmer</button>
-                                        ) : (
-                                            <button
-                                                onClick={() => {
-                                                    setIdTask(task.idTask);
-                                                    setUpTask(task.libelleTask);
-                                                }}
-                                            >
-                                                Modifier
-                                            </button>
-                                        )}
-                                        <button onClick={() => removeTask(task.idTask)}> Supprimer</button>
-                                        <button onClick={()=> getTodo(task.idTask)}>A faire</button>
-                                        <button className="selected" onClick={()=> getDoing(task.idTask)}>En cours</button>
-                                        <button onClick={()=> getDone(task.idTask)}>Terminé</button>
-     
-                                    </div>
-                                </div>
-                            ))} 
-                          
-                        {allTasks &&
-  allTasks
-    .filter((task) => task.idState === 3) 
-    .map((task) => (
-                                <div className="libelletaskDone" key={task.idTask}>
-                                    {/*id task est vide par défaut, si idtask = id de la task, alors j'affiche un champ de modification, je transforme le bouton modifier en confirmer */}
-                                    {idTask === task.idTask ? (
-                                        <input
-                                            type="text"
-                                            value={upTask}
-                                            onChange={(e) => setUpTask(e.target.value)}
-                                            placeholder="Modifier la tâche..."
-                                        />
-                                    ) : (
-                                        <span>{task.libelleTask}</span>
-                                    )}
+                                            </div>
+                                        </div>
+                                    ))}
 
-                                    <div className="rightButtons">
-                         
-                                        {idTask === task.idTask ? (
-                                            <button onClick={update}>Confirmer</button>
-                                        ) : (
-                                            <button
-                                                onClick={() => {
-                                                    setIdTask(task.idTask);
-                                                    setUpTask(task.libelleTask);
-                                                }}
-                                            >
-                                                Modifier
-                                            </button>
-                                        )}
-                                                       <button onClick={() => removeTask(task.idTask)}>
-                                            Supprimer
-                                        </button>
+                            {allTasks && isCheckedDone == false &&
+                                allTasks
+                                    .filter((task) => task.idState === 3)
+                                    .map((task) => (
+                                        <div className="libelletaskDone" key={task.idTask}>
+                                            {/*id task est vide par défaut, si idtask = id de la task, alors j'affiche un champ de modification, je transforme le bouton modifier en confirmer */}
+                                            {idTask === task.idTask ? (
+                                                <input
+                                                    type="text"
+                                                    value={upTask}
+                                                    onChange={(e) => setUpTask(e.target.value)}
+                                                    placeholder="Modifier la tâche..."
+                                                />
+                                            ) : (
+                                                <span>{task.libelleTask}</span>
+                                            )}
 
-                                        <button onClick={()=> getTodo(task.idTask)}>A faire</button>
-                                        <button onClick={()=> getDoing(task.idTask)}>En cours</button>
-                                        <button className="selected" onClick={()=> getDone(task.idTask)}>Terminé</button>
-                                    </div>
-                                </div>
-                            ))}
+                                            <div className="rightButtons">
+
+                                                {idTask === task.idTask ? (
+                                                    <button onClick={update}>Confirmer</button>
+                                                ) : (
+                                                    <button
+                                                        onClick={() => {
+                                                            setIdTask(task.idTask);
+                                                            setUpTask(task.libelleTask);
+                                                        }}
+                                                    >
+                                                        Modifier
+                                                    </button>
+                                                )}
+                                                <button onClick={() => removeTask(task.idTask)}>
+                                                    Supprimer
+                                                </button>
+
+                                                <button onClick={() => getTodo(task.idTask)}>A faire</button>
+                                                <button onClick={() => getDoing(task.idTask)}>En cours</button>
+                                                <button className="selected" onClick={() => getDone(task.idTask)}>Terminé</button>
+                                            </div>
+                                        </div>
+                                    ))}
 
 
                         </div>

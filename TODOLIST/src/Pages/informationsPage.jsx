@@ -28,6 +28,7 @@ const InfoPage = () => {
     }, [decodedToken, isExpired]);
 
     const getAllUserInfo = async () => {
+        
         if (!idUser) return;
         try {
             const response = await InfoUser(idUser);
@@ -78,7 +79,7 @@ const InfoPage = () => {
             <h1>Informations Utilisateur</h1>
             {userInfo.length > 0 && (
                 <p>Nom : {userInfo[0].nameUser}</p>
-            ) }
+            )}
             {!changePassword ? (
                 <button onClick={() => setChangePassword(true)}>
                     Modifier mon mot de passe
@@ -104,11 +105,11 @@ const InfoPage = () => {
                     <button type="submit">Modifier mon mot de passe</button>
                 </form>
             )}
-                        {<form onSubmit={deleteAccount} >
+            {<form onSubmit={deleteAccount} >
                 <Button variant="danger" type="submit" className="btn-warning">
                     Supprimer mon compte
                 </Button>
-                </form>}
+            </form>}
         </Container>
     );
 };
