@@ -144,7 +144,7 @@ const TaskPage = () => {
                             Masquer tâches terminées
                         </div>
                         <div>
-                            <input type="search" />
+                            
                         </div>
                     </div>
                     <div className="taskzone w-75">
